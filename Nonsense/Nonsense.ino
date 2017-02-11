@@ -40,25 +40,11 @@ mySerial.print(0x55);
 }
 
 void loop() { // run over and over
-  while (Serial.available()) {
-    char inputChar = Serial.read();
-    if (inputChar != '\n') {
-    serialmessage += inputChar;
-    }
-    else {
-stringcomplete = true;
-    }
-  }
-  if (stringcomplete == true) {
-
-
-serialmessage = "";
-stringcomplete = false;
-  }
-  int test = random(128,199);
+  
+  int test = map(analogRead(1),0,1023,126,199);
   int testmap = map(test,0,255,0x0,0xFF);
   mySerial.write(testmap);
   Serial.write(testmap);
-  delay(random(10,500));
+  delay(map(analogRead(0),0,1023,50,500));
   }
 
