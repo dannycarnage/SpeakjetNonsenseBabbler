@@ -1,50 +1,38 @@
-/*
-  Software serial multple serial test
-
- Receives from the hardware serial, sends to software serial.
- Receives from software serial, sends to hardware serial.
-
- The circuit:
- * RX is digital pin 10 (connect to TX of other device)
- * TX is digital pin 11 (connect to RX of other device)
-
- Note:
- Not all pins on the Mega and Mega 2560 support change interrupts,
- so only the following can be used for RX:
- 10, 11, 12, 13, 50, 51, 52, 53, 62, 63, 64, 65, 66, 67, 68, 69
-
- Not all pins on the Leonardo and Micro support change interrupts,
- so only the following can be used for RX:
- 8, 9, 10, 11, 14 (MISO), 15 (SCK), 16 (MOSI).
-
- created back in the mists of time
- modified 25 May 2012
- by Tom Igoe
- based on Mikal Hart's example
-
- This example code is in the public domain.
-
- */
+//This sketch uses 4 potentiometers and a Speakjet IC to babble a constant stream of syllables.
+//
+//The Speakjet should be wired up as per the datasheet at https://www.sparkfun.com/datasheets/Components/General/speakjet-usermanual.pdf. I connected pin 12 to V+ 
+//through a 1k resistor. The 5V output from the Arduino is fine for power. Set up the output from pin 18 as shown in the datasheet, including 2-pole filter. It doesn't 
+//seem to matter exactly which values you use there - I didn't have the right capacitors - but just get as close as you can.
+//
+//Data out from the Arduino is on output 11. Input from the potentiometers is on analog ins 0 - 3 (see https://www.arduino.cc/en/Tutorial/ReadAnalogVoltage if you need help)
+//
+//I found it useful to add a momentary switch that would connect the Speakjet reset pin (11) to Gnd in case it needed resetting. I also added LEDs (with resistors in series)
+//on the 3 data out pins of the Speakjet (15,16,17) as they give a good bit of visual feedback about the state of the chip.
+//
+//I ended up having to send the values to the Speakjet as hex values and couldn't get it to work any other way. If anyone knows how to make it work without doing this I'd
+//be interested to hear from them!
 #include <SoftwareSerial.h>
-String serialmessage;
-boolean stringcomplete = false;
-SoftwareSerial mySerial(0, 11); // RX, TX
-
+SoftwareSerial speakJet(0, 11); // RX, TX - we're not receiving so set RX to pin 0
 void setup() {
-  // Open serial communications and wait for port to open:
-  Serial.begin(9600);
+  //Set the output pin as an output. Not sure if this is actually required but whatevs.
   pinMode(11, OUTPUT);
   // set the data rate for the SoftwareSerial port
-  mySerial.begin(9600);
-mySerial.print(0x55);
+  speakJet.begin(9600);
+  //The following line sends the sync character to the Speakjet. Put the Speakjet in sync mode and uncomment the line if you need to set the baud rate.
+  //speakJet.print(0x55);
 }
 
-void loop() { // run over and over
-  
-  int test = map(analogRead(1),0,1023,126,199);
-  int testmap = map(test,0,255,0x0,0xFF);
-  mySerial.write(testmap);
-  Serial.write(testmap);
-  delay(map(analogRead(0),0,1023,50,500));
+void loop() {
+  //First get some values from the pots.
+  int delayLength = map(analogRead(0),0,1023,50,500); //I've set the mapping to what seemed sensible but feel free to tweak
+  int phoneme = map(analogRead(1),0,1023,128,199); //Mapped to the range of human speech phonemes as per Speakjet datasheet
+  int pitch = map(analogRead(2),0,1023,0,255); //Mapped to range of available pitch values
+  int bend = map(analogRead(3),0,1023,0,15); //Mapped to range of available bend values
+  speakJet.write(0x16); //Send pitch command
+  speakJet.write(map(pitch,0,255,0x0,0xFF)); //Send pitch value mapped to hex
+  speakJet.write(0x17); //Send bend command
+  speakJet.write(map(bend,0,15,0x0,0xF)); //Send bend value mapped to hex
+  speakJet.write(map(phoneme,0,255,0x0,0xFF)); //Send phoneme value mapped to hex
+  delay(delayLength); //Delay for however long the delay length is
   }
 
