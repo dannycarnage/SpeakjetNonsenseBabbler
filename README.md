@@ -1,4 +1,4 @@
-This sketch uses 4 potentiometers and a Speakjet IC to babble a constant stream of syllables.
+This Arduino sketch uses 4 potentiometers and a Speakjet IC to babble a constant stream of syllables.
 
 The Speakjet should be wired up as per the datasheet at https://www.sparkfun.com/datasheets/Components/General/speakjet-usermanual.pdf. I connected pin 12 to V+ 
 through a 1k resistor. The 5V output from the Arduino is fine for power. Set up the output from pin 18 as shown in the datasheet, including 2-pole filter. It doesn't 
