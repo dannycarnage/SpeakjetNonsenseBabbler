@@ -16,6 +16,8 @@ SoftwareSerial speakJet(0, 11); // RX, TX - we're not receiving so set RX to pin
 void setup() {
   //Set the output pin as an output. Not sure if this is actually required but whatevs.
   pinMode(11, OUTPUT);
+  //Set the input pin as an input. Ditto.
+  pinMode(2, INPUT);
   // set the data rate for the SoftwareSerial port
   speakJet.begin(9600);
   //The following line sends the sync character to the Speakjet. Put the Speakjet in sync mode and uncomment the line if you need to set the baud rate.
@@ -28,6 +30,7 @@ void loop() {
   int pitch = map(analogRead(1),0,1023,0,255); //Mapped to range of available pitch values.
   int bend = map(analogRead(2),0,1023,0,15); //Mapped to range of available bend values.
   int speechSpeed = map(analogRead(0),0,1023,0,127); //Mapped to range of available speedvalues.
+  if (digitalRead(2) == HIGH) {
   speakJet.write(0x15); //Send speed command
   speakJet.write(map(speechSpeed,0,127,0x7F,0x0)); //Send speed value mapped to hex
   speakJet.write(0x16); //Send pitch command
@@ -36,5 +39,6 @@ void loop() {
   speakJet.write(map(bend,0,15,0x0,0xF)); //Send bend value mapped to hex
   speakJet.write(map(phoneme,0,255,0x0,0xFF)); //Send phoneme value mapped to hex
   delay(delayLength); //Delay for however long the delay length is
+  }
   }
 
