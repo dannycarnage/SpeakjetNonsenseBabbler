@@ -24,10 +24,10 @@ void setup() {
 
 void loop() {
   //First get some values from the pots.
-  int delayLength = map(analogRead(0),0,1023,50,500); //I've set the mapping to what seemed sensible but feel free to tweak
-  int phoneme = map(analogRead(1),0,1023,128,199); //Mapped to the range of human speech phonemes as per Speakjet datasheet
   int pitch = map(analogRead(2),0,1023,0,255); //Mapped to range of available pitch values
   int bend = map(analogRead(3),0,1023,0,15); //Mapped to range of available bend values
+  int delayLength = 100;
+  int phoneme = random(138, 180); //This range seemed to sound best but feel free to tweak.
   speakJet.write(0x16); //Send pitch command
   speakJet.write(map(pitch,0,255,0x0,0xFF)); //Send pitch value mapped to hex
   speakJet.write(0x17); //Send bend command
