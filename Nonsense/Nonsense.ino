@@ -23,13 +23,15 @@ void setup() {
 }
 
 void loop() {
-  //First get some values from the pots.
-  int pitch = map(analogRead(2),0,1023,0,255); //Mapped to range of available pitch values
-  int bend = map(analogRead(3),0,1023,0,15); //Mapped to range of available bend values
   int delayLength = 100;
   int phoneme = random(138, 180); //This range seemed to sound best but feel free to tweak.
+  int pitch = map(analogRead(1),0,1023,0,255); //Mapped to range of available pitch values.
+  int bend = map(analogRead(2),0,1023,0,15); //Mapped to range of available bend values.
+  int speechSpeed = map(analogRead(0),0,1023,0,127); //Mapped to range of available speedvalues.
+  speakJet.write(0x15); //Send speed command
+  speakJet.write(map(speechSpeed,0,127,0x7F,0x0)); //Send speed value mapped to hex
   speakJet.write(0x16); //Send pitch command
-  speakJet.write(map(pitch,0,255,0x0,0xFF)); //Send pitch value mapped to hex
+  speakJet.write(map(pitch,0,255,0xFF,0x0)); //Send pitch value mapped to hex
   speakJet.write(0x17); //Send bend command
   speakJet.write(map(bend,0,15,0x0,0xF)); //Send bend value mapped to hex
   speakJet.write(map(phoneme,0,255,0x0,0xFF)); //Send phoneme value mapped to hex
