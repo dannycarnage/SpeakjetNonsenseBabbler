@@ -26,7 +26,7 @@ void setup() {
 }
 
 void loop() {
-  int delayLength = 100;
+  int delayLength = 100; //This delay seems to give a constant stream without overloading the buffer too fast. Tweak to suit.
   int phoneme = random(138, 180); //This range seemed to sound best but feel free to tweak.
   int pitch = map(analogRead(1),0,1023,0,255); //Mapped to range of available pitch values.
   int bend = map(analogRead(2),0,1023,0,15); //Mapped to range of available bend values.
